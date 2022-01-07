@@ -1,11 +1,11 @@
 /*------------Address Book Service-------------*/
 
 /*-----------UC1-------------*/
-create database address_book_service;
-use address_book_service;
+create database address_book_system;
+use address_book_system;
 
 /*-----------UC2-------------*/
-create table contacts(
+create table address_book(
 	id int not null auto_increment,
     fname varchar(50) not null,
     lname varchar(50) not null,
@@ -18,61 +18,123 @@ create table contacts(
     primary key(id)
 );
 
-select * from contacts;
-
-insert into contacts(fname,lname,address,city,state,zip,phoneno,email) 
-values('Koda', 'Ashok','Visakhapatnam','Vizag','AP',531163,7396382672,'test@gmail.com');
-insert into contacts(fname,lname,address,city,state,zip,phoneno,email) 
-values('Myla', 'Gireish','Visakhapatnam','Vizag','AP',521162,8154785412,'test1@gmail.com');
-insert into contacts(fname,lname,address,city,state,zip,phoneno,email,type)
-values('Vasu', 'Navin','Chennai','Pormandal','TN',622012,9154897702,'test3@gmail.com','family');
+select * from address_book;
 
 /*-----------UC3-------------*/
-insert into contacts(fname,lname,address,city,state,zip,phoneno,email)
+insert into address_book(fname,lname,address,city,state,zip,phoneno,email) 
+values('Koda', 'Ashok','Visakhapatnam','Vizag','AP',531163,7396382672,'test@gmail.com');
+insert into address_book(fname,lname,address,city,state,zip,phoneno,email) 
+values('Myla', 'Gireish','Visakhapatnam','Vizag','AP',521162,8154785412,'test1@gmail.com');
+insert into address_book(fname,lname,address,city,state,zip,phoneno,email)
+values('Vasu', 'Navin','Chennai','Pormandal','TN',622012,9154897702,'test3@gmail.com');
+insert into address_book(fname,lname,address,city,state,zip,phoneno,email)
 values('Charan', 'Kumar','Goa','Goa','GA',11223344,7896541230,'test4@gmail.com');
-select * from contacts;
+
+select * from address_book;
 
 /*-----------UC4-------------*/
-update contacts set fname = 'Polamerseti', lname = 'Sanju' where id = 4;
-select * from contacts;
+update address_book set fname = 'Polamerseti', lname = 'Sanju' where id = 4;
+select * from address_book;
 
 /*-----------UC5-------------*/
-delete from contacts where id = 3;
+delete from address_book where id = 3;
 
 /*-----------UC6-------------*/
-select fname, lname from contacts where state = 'AP';
+select * from address_book where state = 'AP' or city = 'vizag';
 
 /*-----------UC7-------------*/
-select count(city) from contacts;
-select count(state) from contacts;
+SELECT  city, state, COUNT(*) from address_book where city = 'vizag' AND state = 'AP';
 
 /*-----------UC8-------------*/
-select fname, lname from contacts where state = 'AP' order by fname ASC;
-select fname, lname from contacts where state = 'AP' order by fname DESC;
+select * from address_book where state = 'AP' order by fname ASC;
+select * from address_book where state = 'AP' order by fname DESC;
 
 /*-----------UC9-------------*/
-select * from contacts;
-alter table contacts add persontype int;
+alter table address_book
+add family varchar(5),
+add friends varchar(5),
+add profession varchar(5);
 
-create table person_type(
-	id int not null auto_increment,
-    persontype varchar(50) not null,
-    primary key(id)
-);
-alter table contacts drop column persontype;
-select * from person_type;
+select * from address_book;
 
-alter table contacts add foreign key(persontype) references person_type(id);
+update address_book set family = 'Y' where id = 1;
+update address_book set family = 'Y' where id = 2;
+update address_book set friends = 'Y' where id = 4;
 
-update contacts set persontype = 3 where id = 4;
-
-select contacts.lname, person_type.persontype from contacts 
-inner join person_type on contacts.persontype = person_type.id;
+select * from address_book where fname = 'Koda' and family = 'Y';
+select * from address_book where family = 'Y';
 
 /*-----------UC10-------------*/
-select count(persontype) from contacts where persontype = 1;
+select family, friends, profession, count(*) from address_book group by
+family = 'Y', friends = 'Y', profession = 'Y';
 
 /*-----------UC11-------------*/
-select * from contacts;
-insert into contacts(fname,lname,address,city,state,zip,phoneno,email,persontype)
-values('Dev', 'Kunami','Chennai','Pormandal','TN',622012,9154897702,'test3@gmail.com', (1)(2));
+insert into address_book(fname,lname,address,city,state,zip,phoneno,email,family,friends,profession) 
+values('Koda', 'Ashok','Visakhapatnam','Vizag','AP',531163,7396382672,'test@gmail.com','Y','Y','');
+
+select * from address_book;
+
+/*-----------UC12-------------*/
+create table contact(
+	id int not null auto_increment primary key,
+    fname varchar(50) not null,
+    lname varchar(50),
+    phoneno long,
+    email varchar(50)
+);
+
+insert into contact(fname,lname,phoneno,email) values
+('K','Ashok',7396382672,'koda121@gmail.com'),
+('M','Pooja',8123654125,'pooja123@gmail.com'),
+('M','Bargavi',9949087859,'bargavi112@gmail.com'),
+('V','Bhanu',7894561230,'bhanu746@gmail.com'),
+('R','Kishore',8855214578,'kishore00@gmail.com');
+
+select * from contact;
+
+create table address(
+	id int not null auto_increment primary key,
+    city varchar(50),
+    state varchar(50),
+    zip int,
+    contact_id int not null,
+    foreign key(contact_id) references contact(id)
+);
+
+insert into address(city,state,zip,contact_id) values
+('Visakhapatnam','AP','531163',1),
+('Visakhapatnam','AP','540023',2),
+('Hyderabad','TS','500011',3),
+('Secendrabad','TS','500011',4),
+('Palaknama','TN','400123',5);
+
+select * from address;
+select * from address where state = 'AP';
+
+insert into contact(fname,lname,phoneno,email) values
+('K','Harish',9154897701,'harish000@gmail.com');
+insert into address(city,state,zip,contact_id) values
+('Pulihora','TN','400123',6);
+
+select contact.id,contact.lname, address.city,address.state,address.zip
+from contact
+inner join address
+on contact.id=address.id;
+
+
+create table person_type(
+	id int not null auto_increment primary key,
+    family varchar(50),
+    friends varchar(50),
+    profession varchar(50)
+);
+select * from person_type;
+
+create table contact_persontype(
+	contact_id int not null,
+    persontype_id int not null,
+    foreign key(contact_id) references contact(id),
+    foreign key(persontype_id) references person_type(id),
+    primary key(contact_id, persontype_id)
+);
+select * from contact_persontype;
